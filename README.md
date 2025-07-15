@@ -104,4 +104,4 @@ program will automatically load it on start.
 The network layer relies on the `kademlia` package to publish profile details
 and exchange messages using a DHT. The desktop GUI is built with Tkinter and
 can optionally minimize to the system tray using `pystray`. A lightweight Flask
-server serves the web interface using HTML templates.
+server hosts the optional web interface using simple HTML templates.
