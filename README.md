@@ -38,6 +38,7 @@ python social_p2p.py --username bob --fetch
 
 The script keeps running for an hour to maintain its connection to the network.
 It only provides minimal functionality intended for experimentation.
+<<<< codex/build-client-side-social-media-platform
 
 ## GUI
 
@@ -48,6 +49,4 @@ portable theme on other platforms.
 
 Start the GUI with:
 
-```bash
 python social_gui.py
-```
