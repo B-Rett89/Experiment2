@@ -1,7 +1,10 @@
 import asyncio
 import json
 from dataclasses import dataclass, asdict
+<<<<<< codex/enhance-user-experience-for-social-media-program
 from datetime import datetime
+=======
+>>>>>> main
 from pathlib import Path
 from kademlia.network import Server
 
@@ -45,6 +48,7 @@ class Profile:
         with open(path, 'w', encoding='utf-8') as f:
             f.write(self.to_json())
 
+<<<<<< codex/enhance-user-experience-for-social-media-program
 
 @dataclass
 class Post:
@@ -60,6 +64,8 @@ class Post:
     def from_dict(data: dict):
         return Post(**data)
 
+=======
+>>>>>> main
 class Peer:
     def __init__(self, username, port=DEFAULT_PORT, profile_path: Path | None = None):
         self.username = username
@@ -73,7 +79,10 @@ class Peer:
             self.profile = Profile(username=username, visibility={})
             if profile_path:
                 self.profile.save(profile_path)
+<<<<<< codex/enhance-user-experience-for-social-media-program
         self.post_key = f'posts:{self.username}'
+=======
+>>>>>> main
 
     async def start(self, bootstrap_node=None):
         await self.server.listen(self.port)
@@ -150,10 +159,13 @@ async def main():
     parser.add_argument('--message', help='Send message text (requires --lookup)')
     parser.add_argument('--fetch', action='store_true', help='Fetch queued messages')
     parser.add_argument('--profile-dir', help='Directory to store local profile data')
+<<<<<< codex/enhance-user-experience-for-social-media-program
     parser.add_argument('--post', help='Text of status update to publish')
     parser.add_argument('--get-posts', help='Fetch posts from a user')
     parser.add_argument('--like', nargs=2, metavar=('USER', 'TIMESTAMP'),
                         help='Like a post from USER with given TIMESTAMP')
+=======
+>>>>>> main
     args = parser.parse_args()
 
     profile_path = None
