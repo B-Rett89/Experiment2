@@ -9,7 +9,6 @@ from PIL import Image, ImageDraw
 import pystray
 from social_p2p import Peer, DEFAULT_PORT
 
-codex/enhance-user-experience-for-social-media-program
 TRANSLATIONS = {
     'en': {
         'Username:': 'Username:',
@@ -41,8 +40,6 @@ TRANSLATIONS = {
     },
 }
 
-=======
->>>>>> main
 DEFAULT_DATA_DIR = Path.home() / '.p2psocial'
 CONFIG_FILE = 'config.json'
 
@@ -68,18 +65,33 @@ class App(tk.Tk):
         self.config_data = {}
         self.data_dir = DEFAULT_DATA_DIR
         self.minimize_to_tray = False
-codex/enhance-user-experience-for-social-media-program
         self.lang = 'en'
         self.load_or_setup()
+        self.build_menu()
 
     def t(self, text: str) -> str:
         return TRANSLATIONS.get(self.lang, TRANSLATIONS['en']).get(text, text)
 
-=======
-        self.load_or_setup()
-
->>>>>> main
     # -------- Configuration management ---------
+    def build_menu(self):
+        menubar = tk.Menu(self)
+        lang_menu = tk.Menu(menubar, tearoff=False)
+        lang_menu.add_command(label='English', command=lambda: self.change_language('en'))
+        lang_menu.add_command(label='Español', command=lambda: self.change_language('es'))
+        menubar.add_cascade(label='Language', menu=lang_menu)
+        self.config(menu=menubar)
+
+    def change_language(self, lang: str):
+        self.lang = lang
+        self.config_data['lang'] = lang
+        self.save_config()
+        if hasattr(self, 'connect_frame') and self.connect_frame.winfo_exists():
+            self.connect_frame.destroy()
+            self.create_connect_frame()
+        if hasattr(self, 'main_frame') and self.main_frame.winfo_exists():
+            self.main_frame.destroy()
+            self.create_main_frame()
+
     def load_or_setup(self):
         cfg_path = self.data_dir / CONFIG_FILE
         if cfg_path.exists():
@@ -87,10 +99,7 @@ codex/enhance-user-experience-for-social-media-program
                 self.config_data = json.load(open(cfg_path, 'r', encoding='utf-8'))
                 self.minimize_to_tray = self.config_data.get('minimize_to_tray', False)
                 self.data_dir = Path(self.config_data.get('data_dir', self.data_dir))
- codex/enhance-user-experience-for-social-media-program
                 self.lang = self.config_data.get('lang', 'en')
-
- main
             except Exception:
                 self.config_data = {}
         else:
@@ -112,19 +121,13 @@ codex/enhance-user-experience-for-social-media-program
             if new_dir:
                 self.data_dir = Path(new_dir)
         self.minimize_to_tray = messagebox.askyesno('Setup', 'Allow program to run in background when window is closed?')
-<<<<<< codex/enhance-user-experience-for-social-media-program
         if messagebox.askyesno('Language', 'Use Spanish interface?'):
             self.lang = 'es'
-=======
->>>>>> main
 
     def save_config(self):
         cfg_path = self.data_dir / CONFIG_FILE
         self.data_dir.mkdir(parents=True, exist_ok=True)
-< codex/enhance-user-experience-for-social-media-program
         self.config_data['lang'] = self.lang
-=
- main
         with open(cfg_path, 'w', encoding='utf-8') as f:
             json.dump(self.config_data, f)
 
@@ -261,7 +264,6 @@ codex/enhance-user-experience-for-social-media-program
             pass
         self.after(5000, self.check_messages)
 
-<<<<<< codex/enhance-user-experience-for-social-media-program
     def refresh_posts(self):
         try:
             posts = asyncio.run(self.peer.fetch_posts(self.peer.username))
@@ -274,8 +276,6 @@ codex/enhance-user-experience-for-social-media-program
             pass
         self.after(5000, self.refresh_posts)
 
-=======
->>>>>> main
     # ------------- System tray handling -------------
     def create_tray_icon(self):
         size = 64
