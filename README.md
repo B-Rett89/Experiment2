@@ -70,7 +70,7 @@ python social_gui.py
 
 The first time you launch the application it will ask for a folder to store
 profile backups and whether the program should continue running in the
-<<ckground when the window is closed. It also lets you enable a Spanish
+background when the window is closed. It also lets you enable a Spanish
 translation of the interface. Once a profile has been created the application
 will automatically sign in using the saved data.
 
@@ -83,10 +83,6 @@ python web_gui.py
 ```
 
 Open `http://localhost:5000` in your browser to log in and post updates.
-=======
-background when the window is closed. Once a profile has been created the
-application will automatically sign in using the saved data.
->>>>>> main
 
 ### Command line usage (for debugging)
 
@@ -95,6 +91,12 @@ The command line script can still be used for experimenting with the network:
 ```bash
 python social_p2p.py --username alice --port 8468
 ```
+To update your profile from the command line run:
+
+```bash
+python social_p2p.py --username alice --set-about "Love P2P" --set-location "USA" --show-profile
+```
+
 
 ## FAQ
 
@@ -106,7 +108,6 @@ backup of your profile data which can be copied for safekeeping.
 data folder and ensure the configuration file points to the same username. The
 program will automatically load it on start.
 
-<<<<<< codex/enhance-user-experience-for-social-media-program
 **Is there a browser based UI?**  Yes, run `python web_gui.py` and open
 `http://localhost:5000` to use the web interface.
 
@@ -116,10 +117,3 @@ The network layer relies on the `kademlia` package to publish profile details
 and exchange messages using a DHT. The desktop GUI is built with Tkinter and
 can optionally minimize to the system tray using `pystray`. A lightweight Flask
 server hosts the optional web interface using simple HTML templates.
-=======
-## Technical Notes
-
-The network layer relies on the `kademlia` package to publish profile details
-and exchange messages using a DHT. The GUI is implemented with Tkinter and can
-optionally minimize to the system tray using `pystray`.
->>>>> main
