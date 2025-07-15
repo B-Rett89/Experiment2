@@ -1,6 +1,10 @@
 import asyncio
 import json
 from dataclasses import dataclass, asdict
+<<<<<< codex/enhance-user-experience-for-social-media-program
+from datetime import datetime
+=======
+>>>>>> main
 from pathlib import Path
 from kademlia.network import Server
 
@@ -44,6 +48,24 @@ class Profile:
         with open(path, 'w', encoding='utf-8') as f:
             f.write(self.to_json())
 
+<<<<<< codex/enhance-user-experience-for-social-media-program
+
+@dataclass
+class Post:
+    author: str
+    text: str
+    timestamp: str
+    likes: int = 0
+
+    def to_dict(self):
+        return asdict(self)
+
+    @staticmethod
+    def from_dict(data: dict):
+        return Post(**data)
+
+=======
+>>>>>> main
 class Peer:
     def __init__(self, username, port=DEFAULT_PORT, profile_path: Path | None = None):
         self.username = username
@@ -57,6 +79,10 @@ class Peer:
             self.profile = Profile(username=username, visibility={})
             if profile_path:
                 self.profile.save(profile_path)
+<<<<<< codex/enhance-user-experience-for-social-media-program
+        self.post_key = f'posts:{self.username}'
+=======
+>>>>>> main
 
     async def start(self, bootstrap_node=None):
         await self.server.listen(self.port)
@@ -95,6 +121,33 @@ class Peer:
             return json.loads(messages)
         return []
 
+    async def add_post(self, text: str):
+        posts = await self.server.get(self.post_key)
+        post_list = json.loads(posts) if posts else []
+        post = Post(author=self.username, text=text,
+                    timestamp=datetime.utcnow().isoformat(), likes=0)
+        post_list.append(post.to_dict())
+        await self.server.set(self.post_key, json.dumps(post_list))
+
+    async def fetch_posts(self, username: str):
+        posts = await self.server.get(f'posts:{username}')
+        if posts:
+            return [Post.from_dict(p) for p in json.loads(posts)]
+        return []
+
+    async def like_post(self, username: str, timestamp: str):
+        key = f'posts:{username}'
+        posts = await self.server.get(key)
+        if not posts:
+            return False
+        posts_list = json.loads(posts)
+        for p in posts_list:
+            if p['timestamp'] == timestamp:
+                p['likes'] = p.get('likes', 0) + 1
+                await self.server.set(key, json.dumps(posts_list))
+                return True
+        return False
+
 async def main():
     import argparse
 
@@ -106,6 +159,13 @@ async def main():
     parser.add_argument('--message', help='Send message text (requires --lookup)')
     parser.add_argument('--fetch', action='store_true', help='Fetch queued messages')
     parser.add_argument('--profile-dir', help='Directory to store local profile data')
+<<<<<< codex/enhance-user-experience-for-social-media-program
+    parser.add_argument('--post', help='Text of status update to publish')
+    parser.add_argument('--get-posts', help='Fetch posts from a user')
+    parser.add_argument('--like', nargs=2, metavar=('USER', 'TIMESTAMP'),
+                        help='Like a post from USER with given TIMESTAMP')
+=======
+>>>>>> main
     args = parser.parse_args()
 
     profile_path = None
@@ -113,6 +173,25 @@ async def main():
         profile_path = Path(args.profile_dir) / f"{args.username}_profile.json"
     peer = Peer(args.username, port=args.port, profile_path=profile_path)
     await peer.start(args.bootstrap)
+
+    if args.post:
+        await peer.add_post(args.post)
+        print('Post published.')
+
+    if args.get_posts:
+        posts = await peer.fetch_posts(args.get_posts)
+        if posts:
+            for p in posts:
+                print(f"{p.timestamp} - {p.author}: {p.text} ({p.likes} likes)")
+        else:
+            print('No posts found.')
+
+    if args.like:
+        user, ts = args.like
+        if await peer.like_post(user, ts):
+            print('Post liked.')
+        else:
+            print('Post not found.')
 
     if args.lookup:
         profile, addr = await peer.lookup_user(args.lookup)

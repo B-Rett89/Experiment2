@@ -1,3 +1,7 @@
 kademlia==2.2.3
 pystray==0.19.5
 Pillow==11.3.0
+<<<<<< codex/enhance-user-experience-for-social-media-program
+Flask==3.0.3
+=======
+>>>>>> main

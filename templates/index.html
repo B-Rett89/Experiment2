@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head><title>P2P Social</title></head>
+<body>
+  <h1>Welcome {{ username }}</h1>
+  <form action="/post" method="post">
+    <input name="text" placeholder="What's on your mind?">
+    <button type="submit">Post</button>
+  </form>
+  <h2>Your Posts</h2>
+  <ul>
+    {% for p in posts %}
+    <li>{{ p.timestamp }} - {{ p.text }}</li>
+    {% endfor %}
+  </ul>
+</body>
+</html>

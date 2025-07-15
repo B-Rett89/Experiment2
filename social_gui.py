@@ -9,6 +9,40 @@ from PIL import Image, ImageDraw
 import pystray
 from social_p2p import Peer, DEFAULT_PORT
 
+codex/enhance-user-experience-for-social-media-program
+TRANSLATIONS = {
+    'en': {
+        'Username:': 'Username:',
+        'Port:': 'Port:',
+        'Bootstrap (ip:port):': 'Bootstrap (ip:port):',
+        'Start': 'Start',
+        'Search user:': 'Search user:',
+        'Lookup': 'Lookup',
+        'New Post:': 'New Post:',
+        'Publish': 'Publish',
+        'Your Posts:': 'Your Posts:',
+        'Message:': 'Message:',
+        'Send': 'Send',
+        'Inbox:': 'Inbox:',
+    },
+    'es': {
+        'Username:': 'Usuario:',
+        'Port:': 'Puerto:',
+        'Bootstrap (ip:port):': 'Nodo inicial (ip:puerto):',
+        'Start': 'Comenzar',
+        'Search user:': 'Buscar usuario:',
+        'Lookup': 'Buscar',
+        'New Post:': 'Nueva publicación:',
+        'Publish': 'Publicar',
+        'Your Posts:': 'Tus publicaciones:',
+        'Message:': 'Mensaje:',
+        'Send': 'Enviar',
+        'Inbox:': 'Bandeja de entrada:',
+    },
+}
+
+=======
+>>>>>> main
 DEFAULT_DATA_DIR = Path.home() / '.p2psocial'
 CONFIG_FILE = 'config.json'
 
@@ -34,8 +68,17 @@ class App(tk.Tk):
         self.config_data = {}
         self.data_dir = DEFAULT_DATA_DIR
         self.minimize_to_tray = False
+codex/enhance-user-experience-for-social-media-program
+        self.lang = 'en'
         self.load_or_setup()
 
+    def t(self, text: str) -> str:
+        return TRANSLATIONS.get(self.lang, TRANSLATIONS['en']).get(text, text)
+
+=======
+        self.load_or_setup()
+
+>>>>>> main
     # -------- Configuration management ---------
     def load_or_setup(self):
         cfg_path = self.data_dir / CONFIG_FILE
@@ -44,6 +87,10 @@ class App(tk.Tk):
                 self.config_data = json.load(open(cfg_path, 'r', encoding='utf-8'))
                 self.minimize_to_tray = self.config_data.get('minimize_to_tray', False)
                 self.data_dir = Path(self.config_data.get('data_dir', self.data_dir))
+ codex/enhance-user-experience-for-social-media-program
+                self.lang = self.config_data.get('lang', 'en')
+
+ main
             except Exception:
                 self.config_data = {}
         else:
@@ -65,10 +112,19 @@ class App(tk.Tk):
             if new_dir:
                 self.data_dir = Path(new_dir)
         self.minimize_to_tray = messagebox.askyesno('Setup', 'Allow program to run in background when window is closed?')
+<<<<<< codex/enhance-user-experience-for-social-media-program
+        if messagebox.askyesno('Language', 'Use Spanish interface?'):
+            self.lang = 'es'
+=======
+>>>>>> main
 
     def save_config(self):
         cfg_path = self.data_dir / CONFIG_FILE
         self.data_dir.mkdir(parents=True, exist_ok=True)
+< codex/enhance-user-experience-for-social-media-program
+        self.config_data['lang'] = self.lang
+=
+ main
         with open(cfg_path, 'w', encoding='utf-8') as f:
             json.dump(self.config_data, f)
 
@@ -77,19 +133,19 @@ class App(tk.Tk):
         frame.pack(fill='both', expand=True, padx=10, pady=10)
         self.connect_frame = frame
 
-        ttk.Label(frame, text='Username:').grid(row=0, column=0, sticky='w')
+        ttk.Label(frame, text=self.t('Username:')).grid(row=0, column=0, sticky='w')
         self.username_var = tk.StringVar()
         ttk.Entry(frame, textvariable=self.username_var).grid(row=0, column=1)
 
-        ttk.Label(frame, text='Port:').grid(row=1, column=0, sticky='w')
+        ttk.Label(frame, text=self.t('Port:')).grid(row=1, column=0, sticky='w')
         self.port_var = tk.IntVar(value=DEFAULT_PORT)
         ttk.Entry(frame, textvariable=self.port_var).grid(row=1, column=1)
 
-        ttk.Label(frame, text='Bootstrap (ip:port):').grid(row=2, column=0, sticky='w')
+        ttk.Label(frame, text=self.t('Bootstrap (ip:port):')).grid(row=2, column=0, sticky='w')
         self.bootstrap_var = tk.StringVar()
         ttk.Entry(frame, textvariable=self.bootstrap_var).grid(row=2, column=1)
 
-        ttk.Button(frame, text='Start', command=self.start_peer).grid(row=3, column=0, columnspan=2, pady=10)
+        ttk.Button(frame, text=self.t('Start'), command=self.start_peer).grid(row=3, column=0, columnspan=2, pady=10)
 
     def create_main_frame(self):
         frame = ttk.Frame(self)
@@ -97,24 +153,34 @@ class App(tk.Tk):
         self.main_frame = frame
 
         self.search_var = tk.StringVar()
-        ttk.Label(frame, text='Search user:').grid(row=0, column=0, sticky='w')
+        ttk.Label(frame, text=self.t('Search user:')).grid(row=0, column=0, sticky='w')
         ttk.Entry(frame, textvariable=self.search_var).grid(row=0, column=1, sticky='ew')
-        ttk.Button(frame, text='Lookup', command=self.lookup_user).grid(row=0, column=2, padx=5)
+        ttk.Button(frame, text=self.t('Lookup'), command=self.lookup_user).grid(row=0, column=2, padx=5)
         frame.columnconfigure(1, weight=1)
 
         self.profile_text = tk.Text(frame, height=6, state='disabled')
         self.profile_text.grid(row=1, column=0, columnspan=3, pady=5, sticky='nsew')
         frame.rowconfigure(1, weight=1)
 
-        ttk.Label(frame, text='Message:').grid(row=2, column=0, sticky='w')
-        self.msg_var = tk.StringVar()
-        ttk.Entry(frame, textvariable=self.msg_var).grid(row=2, column=1, sticky='ew')
-        ttk.Button(frame, text='Send', command=self.send_message).grid(row=2, column=2, padx=5)
+        ttk.Label(frame, text=self.t('New Post:')).grid(row=2, column=0, sticky='w')
+        self.post_var = tk.StringVar()
+        ttk.Entry(frame, textvariable=self.post_var).grid(row=2, column=1, sticky='ew')
+        ttk.Button(frame, text=self.t('Publish'), command=self.publish_post).grid(row=2, column=2, padx=5)
 
-        ttk.Label(frame, text='Inbox:').grid(row=3, column=0, sticky='nw')
-        self.inbox = tk.Text(frame, state='disabled')
-        self.inbox.grid(row=3, column=1, columnspan=2, sticky='nsew')
+        ttk.Label(frame, text=self.t('Your Posts:')).grid(row=3, column=0, sticky='nw')
+        self.post_box = tk.Text(frame, height=5, state='disabled')
+        self.post_box.grid(row=3, column=1, columnspan=2, sticky='nsew')
         frame.rowconfigure(3, weight=1)
+
+        ttk.Label(frame, text=self.t('Message:')).grid(row=4, column=0, sticky='w')
+        self.msg_var = tk.StringVar()
+        ttk.Entry(frame, textvariable=self.msg_var).grid(row=4, column=1, sticky='ew')
+        ttk.Button(frame, text=self.t('Send'), command=self.send_message).grid(row=4, column=2, padx=5)
+
+        ttk.Label(frame, text=self.t('Inbox:')).grid(row=5, column=0, sticky='nw')
+        self.inbox = tk.Text(frame, state='disabled')
+        self.inbox.grid(row=5, column=1, columnspan=2, sticky='nsew')
+        frame.rowconfigure(5, weight=1)
 
     def start_peer(self, auto=False):
         username = self.username_var.get().strip()
@@ -140,6 +206,7 @@ class App(tk.Tk):
             self.connect_frame.destroy()
         self.create_main_frame()
         self.after(5000, self.check_messages)
+        self.after(5000, self.refresh_posts)
 
     def lookup_user(self):
         user = self.search_var.get().strip()
@@ -170,6 +237,17 @@ class App(tk.Tk):
         except Exception as exc:
             messagebox.showerror('Error', str(exc))
 
+    def publish_post(self):
+        text = self.post_var.get().strip()
+        if not text:
+            return
+        try:
+            asyncio.run(self.peer.add_post(text))
+            self.post_var.set('')
+            self.refresh_posts()
+        except Exception as exc:
+            messagebox.showerror('Error', str(exc))
+
     def check_messages(self):
         try:
             msgs = asyncio.run(self.peer.fetch_messages())
@@ -183,6 +261,21 @@ class App(tk.Tk):
             pass
         self.after(5000, self.check_messages)
 
+<<<<<< codex/enhance-user-experience-for-social-media-program
+    def refresh_posts(self):
+        try:
+            posts = asyncio.run(self.peer.fetch_posts(self.peer.username))
+            self.post_box.configure(state='normal')
+            self.post_box.delete('1.0', 'end')
+            for p in posts:
+                self.post_box.insert('end', f"{p.timestamp}: {p.text} ({p.likes} likes)\n")
+            self.post_box.configure(state='disabled')
+        except Exception:
+            pass
+        self.after(5000, self.refresh_posts)
+
+=======
+>>>>>> main
     # ------------- System tray handling -------------
     def create_tray_icon(self):
         size = 64
