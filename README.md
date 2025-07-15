@@ -1,10 +1,13 @@
 # Experiment2
 
-This repository contains a simple peer-to-peer social networking prototype. It is implemented in Python using the [kademlia](https://github.com/bmuller/kademlia) package for distributed hash table (DHT) storage.
+This repository contains a simple peer-to-peer social networking prototype. It is implemented in Python using the [kademlia](https://github.com/bmuller/kademlia) package for distributed hash table (DHT) storage.  
+The code requires **Python 3.10** or newer.
 
 ## Setup
 
 ```bash
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
@@ -62,7 +65,9 @@ to use the Windows *vista* theme when running on Windows and falls back to a
 portable theme on other platforms. The interface supports English and Spanish
 text.
 
-Start the GUI with:
+### Starting the desktop GUI
+
+Launch the Tkinter interface with:
 
 ```bash
 python social_gui.py
@@ -73,6 +78,8 @@ profile backups and whether the program should continue running in the
 background when the window is closed. It also lets you enable a Spanish
 translation of the interface. Once a profile has been created the application
 will automatically sign in using the saved data.
+You can override the storage location later by starting the program with the
+`--profile-dir` option.
 
 ### Web interface
 
