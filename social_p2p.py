@@ -1,6 +1,6 @@
 import asyncio
 import json
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, asdict, field
 from datetime import datetime
 from pathlib import Path
 from kademlia.network import Server
@@ -23,7 +23,7 @@ class Profile:
     contact_info: str = ''
     location: str = ''
     birthday: str = ''
-    visibility: dict = None
+    visibility: dict = field(default_factory=dict)
 
     def to_json(self):
         return json.dumps(asdict(self))
