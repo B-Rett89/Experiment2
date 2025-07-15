@@ -1,6 +1,7 @@
 import asyncio
 import json
 from dataclasses import dataclass, asdict
+from pathlib import Path
 from kademlia.network import Server
 
 DEFAULT_PORT = 8468
@@ -19,6 +20,8 @@ class Profile:
     font_color: str = ''
     font_size: str = ''
     contact_info: str = ''
+    location: str = ''
+    birthday: str = ''
     visibility: dict = None
 
     def to_json(self):
@@ -29,12 +32,31 @@ class Profile:
         info = json.loads(data)
         return Profile(**info)
 
+    @staticmethod
+    def load(path: Path):
+        if path.exists():
+            with open(path, 'r', encoding='utf-8') as f:
+                return Profile.from_json(f.read())
+        return None
+
+    def save(self, path: Path):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with open(path, 'w', encoding='utf-8') as f:
+            f.write(self.to_json())
+
 class Peer:
-    def __init__(self, username, port=DEFAULT_PORT):
+    def __init__(self, username, port=DEFAULT_PORT, profile_path: Path | None = None):
         self.username = username
         self.port = port
         self.server = Server()
-        self.profile = Profile(username=username, visibility={})
+        self.profile_path = profile_path
+        loaded = Profile.load(profile_path) if profile_path else None
+        if loaded:
+            self.profile = loaded
+        else:
+            self.profile = Profile(username=username, visibility={})
+            if profile_path:
+                self.profile.save(profile_path)
 
     async def start(self, bootstrap_node=None):
         await self.server.listen(self.port)
@@ -47,6 +69,11 @@ class Peer:
     async def publish_profile(self):
         await self.server.set(f'profile:{self.username}', self.profile.to_json())
         await self.server.set(f'address:{self.username}', f'localhost:{self.port}')
+        self.save_profile()
+
+    def save_profile(self):
+        if self.profile_path:
+            self.profile.save(self.profile_path)
 
     async def lookup_user(self, username):
         data = await self.server.get(f'profile:{username}')
@@ -78,9 +105,13 @@ async def main():
     parser.add_argument('--lookup', help='Lookup user profile')
     parser.add_argument('--message', help='Send message text (requires --lookup)')
     parser.add_argument('--fetch', action='store_true', help='Fetch queued messages')
+    parser.add_argument('--profile-dir', help='Directory to store local profile data')
     args = parser.parse_args()
 
-    peer = Peer(args.username, port=args.port)
+    profile_path = None
+    if args.profile_dir:
+        profile_path = Path(args.profile_dir) / f"{args.username}_profile.json"
+    peer = Peer(args.username, port=args.port, profile_path=profile_path)
     await peer.start(args.bootstrap)
 
     if args.lookup:

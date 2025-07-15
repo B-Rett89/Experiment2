@@ -49,4 +49,35 @@ portable theme on other platforms.
 
 Start the GUI with:
 
+```bash
 python social_gui.py
+```
+
+The first time you launch the application it will ask for a folder to store
+profile backups and whether the program should continue running in the
+background when the window is closed. Once a profile has been created the
+application will automatically sign in using the saved data.
+
+### Command line usage (for debugging)
+
+The command line script can still be used for experimenting with the network:
+
+```bash
+python social_p2p.py --username alice --port 8468
+```
+
+## FAQ
+
+**Where is my profile stored?**  By default a folder named `.p2psocial` is
+created in your home directory. This folder holds your configuration file and a
+backup of your profile data which can be copied for safekeeping.
+
+**How do I restore my account?**  Place your saved profile JSON back into the
+data folder and ensure the configuration file points to the same username. The
+program will automatically load it on start.
+
+## Technical Notes
+
+The network layer relies on the `kademlia` package to publish profile details
+and exchange messages using a DHT. The GUI is implemented with Tkinter and can
+optionally minimize to the system tray using `pystray`.
