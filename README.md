@@ -49,7 +49,6 @@ python social_p2p.py --username alice --post "Hello world"
 
 Fetch posts from another user with `--get-posts bob`.
 
-<<<< codex/build-client-side-social-media-platform
 
 ## GUI
 
