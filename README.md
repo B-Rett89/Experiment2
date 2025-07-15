@@ -1,8 +1,6 @@
 # Experiment2
 
-This repository contains a simple peer‑to‑peer social networking prototype. It is
-implemented in Python using the [kademlia](https://github.com/bmuller/kademlia)
-package for distributed hash table (DHT) storage.
+This repository contains a simple peer-to-peer social networking prototype. It is implemented in Python using the [kademlia](https://github.com/bmuller/kademlia) package for distributed hash table (DHT) storage.
 
 ## Setup
 
