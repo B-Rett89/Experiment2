@@ -51,6 +51,7 @@ class Post:
     author: str
     text: str
     timestamp: str
+    likes: int = 0
 
     def to_dict(self):
         return asdict(self)
@@ -115,7 +116,7 @@ class Peer:
         posts = await self.server.get(self.post_key)
         post_list = json.loads(posts) if posts else []
         post = Post(author=self.username, text=text,
-                    timestamp=datetime.utcnow().isoformat())
+                    timestamp=datetime.utcnow().isoformat(), likes=0)
         post_list.append(post.to_dict())
         await self.server.set(self.post_key, json.dumps(post_list))
 
@@ -124,6 +125,19 @@ class Peer:
         if posts:
             return [Post.from_dict(p) for p in json.loads(posts)]
         return []
+
+    async def like_post(self, username: str, timestamp: str):
+        key = f'posts:{username}'
+        posts = await self.server.get(key)
+        if not posts:
+            return False
+        posts_list = json.loads(posts)
+        for p in posts_list:
+            if p['timestamp'] == timestamp:
+                p['likes'] = p.get('likes', 0) + 1
+                await self.server.set(key, json.dumps(posts_list))
+                return True
+        return False
 
 async def main():
     import argparse
@@ -138,6 +152,8 @@ async def main():
     parser.add_argument('--profile-dir', help='Directory to store local profile data')
     parser.add_argument('--post', help='Text of status update to publish')
     parser.add_argument('--get-posts', help='Fetch posts from a user')
+    parser.add_argument('--like', nargs=2, metavar=('USER', 'TIMESTAMP'),
+                        help='Like a post from USER with given TIMESTAMP')
     args = parser.parse_args()
 
     profile_path = None
@@ -154,9 +170,16 @@ async def main():
         posts = await peer.fetch_posts(args.get_posts)
         if posts:
             for p in posts:
-                print(f"{p.timestamp} - {p.author}: {p.text}")
+                print(f"{p.timestamp} - {p.author}: {p.text} ({p.likes} likes)")
         else:
             print('No posts found.')
+
+    if args.like:
+        user, ts = args.like
+        if await peer.like_post(user, ts):
+            print('Post liked.')
+        else:
+            print('Post not found.')
 
     if args.lookup:
         profile, addr = await peer.lookup_user(args.lookup)

@@ -49,13 +49,20 @@ python social_p2p.py --username alice --post "Hello world"
 
 Fetch posts from another user with `--get-posts bob`.
 
+You can also like a specific post by timestamp:
+
+```bash
+python social_p2p.py --username alice --like bob 2025-07-15T12:00:00
+```
+
 
 ## GUI
 
 A small Tkinter based interface is provided in `social_gui.py`. It works on
 Windows, Linux and macOS using the built in `ttk` widgets. The program will try
 to use the Windows *vista* theme when running on Windows and falls back to a
-portable theme on other platforms.
+portable theme on other platforms. The interface supports English and Spanish
+text.
 
 Start the GUI with:
 
@@ -65,8 +72,9 @@ python social_gui.py
 
 The first time you launch the application it will ask for a folder to store
 profile backups and whether the program should continue running in the
-background when the window is closed. Once a profile has been created the
-application will automatically sign in using the saved data.
+background when the window is closed. It also lets you enable a Spanish
+translation of the interface. Once a profile has been created the application
+will automatically sign in using the saved data.
 
 ### Web interface
 
