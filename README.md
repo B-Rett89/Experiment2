@@ -38,3 +38,15 @@ python social_p2p.py --username bob --fetch
 
 The script keeps running for an hour to maintain its connection to the network.
 It only provides minimal functionality intended for experimentation.
+<<<< codex/build-client-side-social-media-platform
+
+## GUI
+
+A small Tkinter based interface is provided in `social_gui.py`. It works on
+Windows, Linux and macOS using the built in `ttk` widgets. The program will try
+to use the Windows *vista* theme when running on Windows and falls back to a
+portable theme on other platforms.
+
+Start the GUI with:
+
+python social_gui.py
